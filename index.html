@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WetterApp</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">WetterApp</h1>
+    <div class="input-group my-3">
+      <input type="text" class="form-control" id="city-input" placeholder="Stadt eingeben">
+      <div class="input-group-append">
+        <button class="btn btn-primary" onclick="fetchWeather()">Suchen</button>
+      </div>
+    </div>
+    <div id="weather-output" class="text-center"></div>
+  </div>
+  <script>
+    function handleEnter(event) {
+        
+        if (event.key === 'Enter') {
+            fetchWeather();
+        }
+    }
+    
+    
+    
+    function fetchWeather() {
+        const city = document.getElementById('city-input').value;
+        const apiKey = 'bab281d79e5f1e9755a68d754cc313e7'; // API-Schlüssel hier einfügen
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=de`;
+        
+    
+        
+    
+        fetch(apiUrl)
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Netzwerkantwort war nicht ok');
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                displayWeather(data);
+            })
+            .catch(function(error) {
+                console.error('Fehler:', error);
+    
+                document.body.style.backgroundImage = "url('./Bilder/fehler.jpg')";
+                document.body.style.backgroundSize = "cover";
+                document.body.style.backgroundPosition = "center";
+                document.body.style.backgroundRepeat = "no-repeat";
+                
+                var weatherOutput = document.getElementById('weather-output');
+                weatherOutput.innerHTML = `<p>Stadt nicht gefunden.</p>`;
+                weatherOutput.style.display = 'block';
+            });
+    }
+    
+    function displayWeather(data) {
+        const weatherOutput = document.getElementById('weather-output');
+        if (data && data.weather && data.main) {
+            const timezoneOffset = data.timezone;
+            const localDate = new Date(Date.now() + timezoneOffset * 1000);
+            const localTime = localDate.toLocaleTimeString([0], );
+           
+            weatherOutput.innerHTML = `
+                <h2>Wetter in ${data.name}</h2>
+                <p>Temperatur: ${data.main.temp} °C</p>
+                <p>WindGeschwindigkeit: ${data.wind.speed} miles/hour</p>
+                <p> Luftfeuchtigkeit: ${data.main.humidity} % </P>
+                <p>Beschreibung: ${data.weather[0].description}</p>
+                <p>Ortzeit: ${localTime}</p> 
+            `;
+            weatherOutput.style.display = 'block'; // Ausgabe anzeigen
+        } else {
+            weatherOutput.innerHTML = `<p>Stadt nicht gefunden.</p>`;
+            weatherOutput.style.display = 'block'; // Ausgabe anzeigen
+        }
+     
+    }
+    
+    function displayWeather(data) {
+        var weatherOutput = document.getElementById('weather-output');
+        var appMain = document.querySelector('.app-main'); 
+    
+        if (data && data.weather && data.main) {
+            
+           
+            weatherOutput.innerHTML = `
+                <h2>Wetter in ${data.name}</h2>
+                <p>Temperatur: ${data.main.temp} °C</p>
+               
+                <p>Beschreibung: ${data.weather[0].description}</p>
+                <p>------------------------</p>
+               <p> Niedrigste Temperatur: ${data.main.temp_min} °C </p>
+               <p> Höhste Temperatur: ${data.main.temp_max} °C </p>
+               <p>------------------------</p>
+               <p> Luftfeuchtigkeit: ${data.main.humidity} % </P>
+                <p>Wind Geschwindigkeit: ${data.wind.speed} Km/H</p>
+                 
+            `;
+            weatherOutput.style.display = 'block';
+    
+            
+            var weatherBackgrounds = {
+                clear: "url('./bilder/clear')",
+                clouds: "url('./bilder/wolks.jpg')",
+                rain: "url('./bilder/rain.jpg')",
+                drizzle: "url('./bilder/hagel.png')",
+                snow: "url('./bilder/schnee.jpg')",
+                thunderstorm: "url('./bilder/blitz.jpg')",
+                sun: "url('./bilder/sonne.jpg')"
+            };
+    
+            
+            var weatherType = data.weather[0].main.toLowerCase();
+            var backgroundImage = weatherBackgrounds[weatherType] || ""; 
+           
+            document.body.style.backgroundImage = backgroundImage;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundRepeat = "no-repeat";
+        } else {
+            weatherOutput.innerHTML = `<p>Stadt nicht gefunden.</p>`;
+            weatherOutput.style.display = 'block';
+            document.body.style.backgroundImage = "url ('./Bilder/fehler.jpg')";
+        }
+       
+    }
+  </script>
+</body>
+</html>
